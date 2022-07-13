@@ -94,3 +94,14 @@ EP.Functions.DeleteVehicle(
     vehicle --[[ Entity ]]
 )
 ```
+
+### Method 2 - With Trigger
+
+{% hint style="danger" %}
+It only deletes the vehicle from the database without deleting the vehicle. This prevents you from updating the datas.
+{% endhint %}
+
+```lua
+TriggerServerEvent('EP:Server:LostVehicle', vehicle)
+```
+
