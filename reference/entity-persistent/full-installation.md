@@ -74,8 +74,23 @@ QBCore.Functions.SpawnVehicle('adder', function(veh)
     TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
     TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
     SetVehicleEngineOn(veh, true, true)
-    TriggerServerEvent('EP:Server:SaveToDb', netId, GetEntityModel('adder'), coords,{},
-    'TEST')
+    local netId = NetworkGetNetworkIdFromEntity(veh)
+    TriggerServerEvent('EP:Server:SaveToDb', netId, GetEntityModel('adder'), coords, {}, 'TEST')
 end, coords, true)
 ```
 
+## Remove a vehicle from persistence
+
+### Method 1 - With function
+
+{% hint style="info" %}
+This function automatically removes the vehicle from the database and removes the vehicle.\
+**It is replaced when you see :**\
+<mark style="color:green;">ESX.Game.DeleteVehicle(vehicle)</mark> or <mark style="color:green;">QBCore.Functions.DeleteVehicle(vehicle)</mark>
+{% endhint %}
+
+```lua
+EP.Functions.DeleteVehicle(
+    vehicle --[[ Entity ]]
+)
+```

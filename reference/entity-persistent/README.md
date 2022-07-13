@@ -11,8 +11,8 @@ This script is paid in my tebex website
 Make sure to have this order in server.cfg
 
 ```
-ensure oxmysql
 ensure <your framworks>
+ensure oxmysql
 ensure Entity-Persistent
 ```
 
