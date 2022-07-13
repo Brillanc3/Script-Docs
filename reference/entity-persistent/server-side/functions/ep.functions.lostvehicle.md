@@ -15,11 +15,10 @@ EP.Functions.LostVehicle(registeryKey, cb)
 
 ```lua
 -- Exemple (logs is already implement)
-RegisterNetEvent('MyPersonnalLost', function(registeryKey, reason)
-    EP.Functions.LostVehicle(registeryKey, function(data)
-        EP.Logs("Lost " .. data.netId .. " netId vehicle with reason : " .. tostring(reason))
-    end)
-end)
+local registery = EP.Functions.GetVehicleRegisteryKey(vehicle)
 
-TriggerServerEvent('MyPersonnalLost', registeryKey, "come out garage")
+EP.Functions.LostVehicle(registery, function(data)
+    local props = json.decode(data.props)
+    EP.Logs("vehicle " .. data.netId .. " have " .. props.plate .. " plate.")
+end)
 ```
