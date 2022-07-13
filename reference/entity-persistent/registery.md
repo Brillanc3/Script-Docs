@@ -13,5 +13,5 @@ EP.Functions.TriggerCallback('GetVehicleRegisteryKey', function(registeryKey)
 end, NetworkGetNetworkIdFromEntity(vehicle))
 
 -- For server side, prefer to use
-local registery = EP.Functions.GetVehicleRegisteryKey(netId)
+local registery = EP.Functions.GetVehicleRegisteryKey(vehicle)
 ```
