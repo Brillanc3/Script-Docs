@@ -58,3 +58,24 @@ TriggerServerEvent('EP:Server:SaveToDb',
 )
 ```
 
+{% hint style="info" %}
+It is generally used in the callback of framworks functions except in exceptional cases.
+{% endhint %}
+
+#### Exemple to use
+
+```lua
+local coords = QBCore.Functions.GetCoords(PlayerPedId())
+
+QBCore.Functions.SpawnVehicle('adder', function(veh)
+    SetVehicleNumberPlateText(veh, 'TEST')
+    SetEntityHeading(veh, coords.w)
+    exports['LegacyFuel']:SetFuel(veh, 100.0)
+    TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+    TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
+    SetVehicleEngineOn(veh, true, true)
+    TriggerServerEvent('EP:Server:SaveToDb', netId, GetEntityModel('adder'), coords,{},
+    'TEST')
+end, coords, true)
+```
+
