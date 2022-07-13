@@ -11,14 +11,14 @@ This script is paid in my tebex website
 Make sure to have this order in server.cfg
 
 ```
+ensure <your framworks>
 ensure oxmysql
 ensure Entity-Persistent
-ensure <your framworks>
 ```
 
 ### Client or Server-side script
 
 ```lua
--- place in top of script if you use any function
+-- place in top of script
 local EP = exports['Entity-Persistent']:GetCore()
 ```

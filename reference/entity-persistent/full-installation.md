@@ -102,6 +102,6 @@ It only deletes the vehicle from the database without deleting the vehicle. This
 {% endhint %}
 
 ```lua
-TriggerServerEvent('EP:Server:LostVehicle', NetworkGetNetworkIdFromEntity(vehicle))
+TriggerServerEvent('EP:Server:LostVehicle', vehicle)
 ```
 
