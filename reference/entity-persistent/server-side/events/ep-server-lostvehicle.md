@@ -10,31 +10,8 @@ description: >-
 
 ```lua
 #Server
-TriggerEvent('EP:Server:LostVehicle', registery)
+TriggerEvent('EP:Server:LostVehicle', vehicle)
 
 #Client
-TriggerServerEvent('EP:Server:LostVehicle', registery)
-```
-
-### How work ?
-
-{% hint style="warning" %}
-It's an exemple !!!
-{% endhint %}
-
-```lua
-local EP = exports['Entity-Persistent']:GetCore()
-local vehicle = GetVehiclePedIsIn(GetPlayerPed(), true)
-
-#client-side
-
-EP.Functions.TriggerCallback('GetVehicleRegisteryKey', function(registeryKey)
-    TriggerServerEvent('EP:Server:LostVehicle', registeryKey)
-end, NetworkGetNetworkIdFromEntity(vehicle))
-
-#server-side
--- For server side, prefer to use
-local netId = NetworkGetNetworkIdFromEntity(vehicle)
-local registery = EP.Functions.GetVehicleRegisteryKey(netId)
-TriggerEvent('EP:Server:LostVehicle', registery)
+TriggerServerEvent('EP:Server:LostVehicle', vehicle)
 ```
