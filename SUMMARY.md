@@ -6,6 +6,7 @@
 
 * [Entity-Persistent](reference/entity-persistent/README.md)
   * [Good start](reference/entity-persistent/good-start.md)
+  * [Full Installation](reference/entity-persistent/full-installation.md)
   * [Registery](reference/entity-persistent/registery.md)
   * [Server-side](reference/entity-persistent/server-side/README.md)
     * [Functions](reference/entity-persistent/server-side/functions/README.md)

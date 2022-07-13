@@ -11,6 +11,6 @@ local EP = exports['Entity-Spawner']:GetCore()
 
 ### Easy install is here
 
-{% content-ref url="client-side/functions/ep.functions.createvehicle.md" %}
-[ep.functions.createvehicle.md](client-side/functions/ep.functions.createvehicle.md)
+{% content-ref url="full-installation.md" %}
+[full-installation.md](full-installation.md)
 {% endcontent-ref %}
