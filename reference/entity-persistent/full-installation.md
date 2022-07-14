@@ -35,15 +35,13 @@ QBCore.Functions.SpawnVehicle(model, cb, coords, isnetworked)
 ```lua
 --[[ For setup vector4 write : ]]
 local coords = vector3(x, y, z)
-local heading = coords.heading
-local newCoords = vector4(coords.x, coords.y, coords.z, heading)
-
+local heading = 60.0
 
 EP.Functions.CreateVehicle('jester2', function(vehicle)
     SetVehicleNumberPlateText(vehicle, "MyPlate")
     exports['LegacyFuel']:SetFuel(veh, 100.0)
     TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-end, newCoords , "MyPlate")
+end, vector4(coords.x, coords.y, coords.z, heading) , "MyPlate")
 ```
 
 ### Method 2 - With TriggerEvent
@@ -102,6 +100,6 @@ It only deletes the vehicle from the database without deleting the vehicle. This
 {% endhint %}
 
 ```lua
-TriggerServerEvent('EP:Server:LostVehicle', vehicle)
+TriggerServerEvent('EP:Server:LostVehicle', NetworkGetNetworkIdFromEntity(vehicle))
 ```
 
