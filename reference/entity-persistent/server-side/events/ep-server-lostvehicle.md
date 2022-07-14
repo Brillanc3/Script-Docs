@@ -10,8 +10,8 @@ description: >-
 
 ```lua
 #Server
-TriggerEvent('EP:Server:LostVehicle', vehicle)
+TriggerEvent('EP:Server:LostVehicle', NetworkGetNetworkIdFromEntity(vehicle))
 
 #Client
-TriggerServerEvent('EP:Server:LostVehicle', vehicle)
+TriggerServerEvent('EP:Server:LostVehicle', NetworkGetNetworkIdFromEntity(vehicle))
 ```
