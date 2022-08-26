@@ -8,6 +8,6 @@ TriggerEvent('EP:Server:LoadedVehicles', vehicles)
 
 ```lua
 -- Exemple :
-local vehicle = EP.Functions.GetVehicles()
+local vehicles = EP.Functions.LoadsVehicles()
 TriggerEvent('EP:Server:LoadedVehicles', vehicles)
 ```

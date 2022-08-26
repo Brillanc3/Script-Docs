@@ -20,6 +20,7 @@
       * [EP:Server:LostVehicle](reference/entity-persistent/server-side/events/ep-server-lostvehicle.md)
   * [Client-side](reference/entity-persistent/client-side/README.md)
     * [Functions](reference/entity-persistent/client-side/functions/README.md)
+      * [EP.Functions.Deletevehicle](reference/entity-persistent/client-side/functions/ep.functions.deletevehicle.md)
       * [EP.Functions.CreateVehicle](reference/entity-persistent/client-side/functions/ep.functions.createvehicle.md)
       * [EP.Functions.OnVehicleRespawned](reference/entity-persistent/client-side/functions/ep.functions.onvehiclerespawned.md)
     * [Events](reference/entity-persistent/client-side/events/README.md)
