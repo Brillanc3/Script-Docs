@@ -1,7 +1,7 @@
 # Copy of (better) With TriggerEvent
 
 {% hint style="info" %}
-Client / Server is exactly same, **no need to write TriggerServerEvent or TriggerClientEvent**.
+Client **need to write TriggerServerEvent**
 {% endhint %}
 
 ### From server file

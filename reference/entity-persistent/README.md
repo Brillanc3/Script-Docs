@@ -1,14 +1,10 @@
----
-description: Redesign of the WIKI
----
-
 # Entity-Persistent
 
 This script is paid in my tebex website
 
 {% embed url="https://brillance-scripts.tebex.io/package/5193076" %}
 
-## how to start
+## how to use
 
 ### server.cfg
 
@@ -20,3 +16,9 @@ ensure <your framworks>
 ensure Entity-Persistent
 ```
 
+### Client or Server-side script
+
+```lua
+-- place in top of script if you use any function
+local EP = exports['Entity-Persistent']:GetCore()
+```
