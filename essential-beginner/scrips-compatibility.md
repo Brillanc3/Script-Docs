@@ -48,3 +48,11 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 ```
+
+For persiste vehicle now use this Trigger variable
+
+```lua
+TriggerEvent('EP:Persist', vehicle, plate, {
+    citizenIdKeys = QBCore.Functions.GetPlayerData().citizenid
+})
+```
