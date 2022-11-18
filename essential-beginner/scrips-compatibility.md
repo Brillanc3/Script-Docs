@@ -1,6 +1,6 @@
-# Scrips Issues
+# Scrips Compatibility
 
-## [#qb-vehiclekeys](scrips-issues.md#qb-vehiclekeys "mention")
+## [#qb-vehiclekeys](scrips-compatibility.md#qb-vehiclekeys "mention")
 
 ```sql
 -- Import this inside persistent vehicles table
