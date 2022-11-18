@@ -22,7 +22,7 @@ Edit file : /server/main.lua
 
 ```lua
 -- Add :
-RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(playerId)
+RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeysWithPersistent', function(playerId)
     local Player = QBCore.Functions.GetPlayer(playerId)
     local result = MySQL.query('SELECT * FROM persistent_vehicles WHERE citizenIdKeys = ?', {Player.PlayerData.citizenid})
     if result then
@@ -36,9 +36,15 @@ end)
 Edit file : /client/main.lua
 
 ```lua
--- Add 
+-- Edit 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     GetKeys()
-    TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', QBCore.Functions.GetPlayerData().source)
+    TriggerServerEvent('vehiclekeys:server:GiveVehicleKeysWithPersistent', QBCore.Functions.GetPlayerData().source)
+end)
+AddEventHandler('onResourceStart', function(resourceName)
+    if resourceName == GetCurrentResourceName() and QBCore.Functions.GetPlayerData() ~= {} then
+        GetKeys()
+        TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeysWithPersistent', QBCore.Functions.GetPlayerData().source )
+    end
 end)
 ```
