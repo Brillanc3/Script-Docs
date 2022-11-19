@@ -1,9 +1,10 @@
 # Scrips Compatibility
 
-## [#qb-vehiclekeys](scrips-compatibility.md#qb-vehiclekeys "mention")
+## qb-vehicleshop
+
+Add this SQL
 
 ```sql
--- Import this inside persistent vehicles table
 ALTER TABLE `persistent_vehicles`
     ADD `citizenIdKeys` VARCHAR(11) NULL AFTER `plate`;
 ```
@@ -56,3 +57,4 @@ TriggerEvent('EP:Persist', vehicle, plate, {
     citizenIdKeys = QBCore.Functions.GetPlayerData().citizenid
 })
 ```
+
