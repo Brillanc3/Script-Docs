@@ -1,6 +1,6 @@
 # Scrips Compatibility
 
-## qb-vehicleshop
+## qb-vehiclekeys
 
 Add this SQL
 
