@@ -2,7 +2,7 @@
 
 ## qb-vehiclekeys
 
-Add this SQL
+Add this SQL inside persistent vehicle table
 
 ```sql
 ALTER TABLE `persistent_vehicles`
