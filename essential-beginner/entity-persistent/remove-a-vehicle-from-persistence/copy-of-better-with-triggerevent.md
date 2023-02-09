@@ -7,17 +7,13 @@ Client **need to write TriggerServerEvent**
 ### From server file
 
 ```lua
-TriggerEvent('EP:LostVehicle', vehicle)
-or
-TriggerEvent('EP:Server:LostVehicle', netId)
+TriggerEvent('EP:LostVehicle', registery)
 ```
 
 ### From client file
 
 ```lua
-TriggerEvent('EP:LostVehicle', vehicle)
-or
-TriggerServerEvent('EP:Server:LostVehicle', netID)
+TriggerServerEvent('EP:LostVehicle', registery)
 ```
 
 ## Details of arguments
@@ -28,18 +24,7 @@ TriggerServerEvent('EP:Server:LostVehicle', netID)
 This argument is mandatory.
 {% endhint %}
 
-Vehicle args is your vehicle entity.
-{% endtab %}
-
-{% tab title="netID" %}
-{% hint style="warning" %}
-This argument is mandatory.
-{% endhint %}
-
-netID can be obtien with&#x20;
-
-<pre class="language-lua"><code class="lang-lua">-- return integer value if DoesEntityExist(vehicle)
-<strong>NetworkGetNetworkIdFromEntity(vehicle)</strong></code></pre>
+Default registery is vehicle plate: GetVehicleNumberPlateText(vehicle)
 {% endtab %}
 {% endtabs %}
 
