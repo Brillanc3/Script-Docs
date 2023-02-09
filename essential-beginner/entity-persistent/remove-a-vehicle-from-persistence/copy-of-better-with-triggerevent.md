@@ -19,7 +19,7 @@ TriggerServerEvent('EP:LostVehicle', registery)
 ## Details of arguments
 
 {% tabs %}
-{% tab title="vehicle" %}
+{% tab title="registery" %}
 {% hint style="warning" %}
 This argument is mandatory.
 {% endhint %}
