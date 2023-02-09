@@ -13,11 +13,23 @@ TriggerEvent('EP:Persist', vehicle, plate, {
 After, for get all citizenId :
 
 ```lua
-local EP = exports['Entity-Persistenqt']:GetData()
-for k, v in pairs(EP) do
-    if v.citizenIdKeys == "citizenId or license" then
-        -- Action
+QBCore.Functions.CreateCallback('qb-vehiclekeys:server:GetVehicleKeys', function(source, cb)
+    local citizenid = QBCore.Functions.GetPlayer(source).PlayerData.citizenid
+    local keysList = {}
+    for plate, citizenids in pairs (VehicleList) do
+        if citizenids[citizenid] then
+            keysList[plate] = true
+        end
     end
-end
+
+    local VehiclesData = exports['Entity-Persistent']:GetData()
+    for k, v in pairs(VehiclesData) do
+        if v.citizenId == citizenid then
+            keysList[v.plate] = true
+        end
+    end
+
+    cb(keysList)
+end)
 ```
 
