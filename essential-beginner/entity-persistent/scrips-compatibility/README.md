@@ -6,7 +6,7 @@ For persiste vehicle now use this Trigger variable
 
 ```lua
 TriggerEvent('EP:Persist', vehicle, plate, {
-    citizenIdKeys = QBCore.Functions.GetPlayerData().citizenid
+    citizenId = QBCore.Functions.GetPlayerData().citizenid
 })
 ```
 
