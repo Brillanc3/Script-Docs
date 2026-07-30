@@ -28,7 +28,7 @@ Everything else works out of the box.
 
 | Page                                        | What it covers                                                |
 | ------------------------------------------- | ------------------------------------------------------------- |
-| [Installation](installation.md)             | Start order, database, admin permissions                      |
+| [Installation](installation.md)             | Dependencies, start order, database, admin permissions        |
 | [Tracking a vehicle](tracking-a-vehicle.md) | The `Track` export, and what `ownerSource` does               |
 | [Access model](access-model.md)             | `canAccess`, render distance, key-item refresh, admin logging |
 | [Configuration](configuration.md)           | Every key in `config/shared.lua`, plus the convars            |
@@ -36,11 +36,15 @@ Everything else works out of the box.
 
 ## Dependencies
 
-| Dependency             | Required? | With it                                                                                                                       | Without it                                                                                                                                                              |
-| ---------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `oxmysql`              | **Yes**   | -                                                                                                                             | The resource will not start                                                                                                                                             |
-| `qbx_core` / `qb-core` | Optional  | Owner identity is the `citizenid`, notifications go through the framework, admin commands use the framework permission groups | Standalone mode: owner identity is the player's `license:` identifier, notifications go through `chat:addMessage`, admin commands use the ACE principal `command.vtarp` |
-| `ox_lib`               | Optional  | Full vehicle snapshot: colours, extras, doors, windows, tyres                                                                 | Reduced snapshot, and the `[E]` help text falls back to the native prompt                                                                                               |
-| `ox_inventory`         | Optional  | `accessRefreshItems` refreshes tarp visibility the instant a key item changes hands                                           | Visibility refreshes on the reconcile poll only                                                                                                                         |
+{% hint style="info" %}
+**`oxmysql` is the only hard requirement** - without it the resource will not start. **`ox_lib` is recommended but not required**: it is what lets a tarped vehicle keep its colours, extras, doors, windows and tyres. Everything else is optional.
+{% endhint %}
+
+| Dependency             | Required?    | With it                                                                                                                       | Without it                                                                                                                                                              |
+| ---------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `oxmysql`              | **Required** | -                                                                                                                             | The resource will not start                                                                                                                                             |
+| `ox_lib`               | Recommended  | Full vehicle snapshot: colours, extras, doors, windows, tyres, and the ox\_lib `[E]` help text                                | Reduced snapshot, and the help text falls back to the native prompt                                                                                                     |
+| `qbx_core` / `qb-core` | Optional     | Owner identity is the `citizenid`, notifications go through the framework, admin commands use the framework permission groups | Standalone mode: owner identity is the player's `license:` identifier, notifications go through `chat:addMessage`, admin commands use the ACE principal `command.vtarp` |
+| `ox_inventory`         | Optional     | `accessRefreshItems` refreshes tarp visibility the instant a key item changes hands                                           | Visibility refreshes on the reconcile poll only                                                                                                                         |
 
 Detection is automatic at resource start. There is no config flag to pick a mode.

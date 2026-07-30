@@ -1,6 +1,14 @@
 # Installation
 
-## 1. Start the resource
+## 1. Check the dependencies
+
+**`oxmysql` is required.** It is declared in the manifest and the resource will not start without it.
+
+**`ox_lib` is recommended but not required.** With it, a tarped vehicle keeps its colours, extras, doors, windows and tyres, and the `[E]` prompt uses the ox\_lib help text. Without it the resource still runs, on a reduced snapshot and the native prompt.
+
+A framework (`qbx_core` or `qb-core`) and `ox_inventory` are optional too. Detection is automatic at resource start - there is no config flag to pick a mode.
+
+## 2. Start the resource
 
 Drop the `vehicle_tarp` folder in your resources and start it **after** `oxmysql` and your framework:
 
@@ -13,19 +21,11 @@ ensure vehicle_tarp
 
 If your server uses bracketed group folders, putting it in `[standalone]` is enough - the existing `ensure [standalone]` line already covers it, as long as `[ox]` and `qbx_core` start before it.
 
-## 2. Database
+## 3. Database
 
 Nothing to import. The tables are created automatically on first start through `oxmysql`, and there is no `.sql` file shipped with the resource.
 
-{% hint style="info" %}
-`vehicle_tarp_keys` was created by earlier versions and is no longer used. It is not created any more, and an existing one is left alone. Drop it by hand when convenient:
-
-```sql
-DROP TABLE IF EXISTS `vehicle_tarp_keys`;
-```
-{% endhint %}
-
-## 3. Admin permissions
+## 4. Admin permissions
 
 **On `qbx_core`** there is nothing to do. `Config.adminGroups` (`{ 'admin', 'god' }` by default) is checked through `exports.qbx_core:HasPermission`.
 
@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS `vehicle_tarp_keys`;
 add_ace group.admin command.vtarp allow
 ```
 
-## 4. Wire up the two things that are yours
+## 5. Wire up the two things that are yours
 
 The resource does not spawn vehicles and ships no access rule you can use as-is:
 
