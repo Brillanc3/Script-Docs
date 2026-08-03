@@ -22,17 +22,18 @@ Two things, and only two:
 1. [**Tracking**](tracking-a-vehicle.md) - call `exports.vehicle_tarp:Track` from your garage, dealership or spawn code once the vehicle exists.
 2. [**Access**](access-model.md) - write `ServerConfig.canAccess` to decide who sees and uncovers a tarp.
 
-Everything else works out of the box.
+Everything else works out of the box. When your garage stores a vehicle back, or a player is wiped, call [`Untrack`](untracking-a-vehicle.md) to drop it from the system.
 
 ## Where to go next
 
-| Page                                        | What it covers                                                |
-| ------------------------------------------- | ------------------------------------------------------------- |
-| [Installation](installation.md)             | Dependencies, start order, database, admin permissions        |
-| [Tracking a vehicle](tracking-a-vehicle.md) | The `Track` export, and what `ownerSource` does               |
-| [Access model](access-model.md)             | `canAccess`, render distance, key-item refresh, admin logging |
-| [Configuration](configuration.md)           | Every key in `config/shared.lua`, plus the convars            |
-| [Commands](commands.md)                     | Admin commands, the staff map, the diagnostic overlay         |
+| Page                                            | What it covers                                                |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| [Installation](installation.md)                 | Dependencies, start order, database, admin permissions        |
+| [Tracking a vehicle](tracking-a-vehicle.md)     | The `Track` export, and what `ownerSource` does               |
+| [Untracking a vehicle](untracking-a-vehicle.md) | The `Untrack` export, its filter, and what it leaves behind   |
+| [Access model](access-model.md)                 | `canAccess`, render distance, key-item refresh, admin logging |
+| [Configuration](configuration.md)               | Every key in `config/shared.lua`, plus the convars            |
+| [Commands](commands.md)                         | Admin commands, the staff map, the diagnostic overlay         |
 
 ## Dependencies
 

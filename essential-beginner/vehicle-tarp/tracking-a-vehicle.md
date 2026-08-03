@@ -45,3 +45,7 @@ It grants **no key and no item**. Whether that player - or anyone else - can lat
 ## Tracking a vehicle by hand
 
 `/vtarp_track` tracks the vehicle the calling admin is currently sitting in. It exists so a vehicle can be injected into the system without a garage integration - useful while testing, not a replacement for the export.
+
+## Undoing it
+
+`exports.vehicle_tarp:Untrack` is the counterpart of `Track`: it drops the row without touching the entity, so your garage can store the vehicle back and take it out of the system in the same breath - see [Untracking a vehicle](untracking-a-vehicle.md).
