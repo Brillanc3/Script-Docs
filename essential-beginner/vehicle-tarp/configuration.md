@@ -1,5 +1,6 @@
 ---
 description: config/shared.lua
+icon: sliders
 ---
 
 # Configuration

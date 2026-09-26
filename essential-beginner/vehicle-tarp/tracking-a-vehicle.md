@@ -1,5 +1,6 @@
 ---
 description: The one export you need to call
+icon: location-crosshairs
 ---
 
 # Tracking a vehicle

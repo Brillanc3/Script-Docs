@@ -1,6 +1,0 @@
----
-description: Soon...
----
-
-# qb-clothitems
-

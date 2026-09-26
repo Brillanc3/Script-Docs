@@ -1,12 +1,25 @@
 ---
 description: Vehicle persistence and idle tarping, with a server-side access resolver
+icon: car
 ---
 
 # Vehicle Tarp
 
 `vehicle_tarp` persists vehicles server-side and hides idle ones under a translucent tarp that only the players you allow can see and uncover.
 
+## How it works
+
 Once a vehicle is handed to the resource, it is tracked in one of two states:
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> ACTIVE: exports Track
+    ACTIVE --> TARPED: idle for tarpIdleMinutes
+    TARPED --> ACTIVE: allowed player presses E
+    ACTIVE --> [*]: exports Untrack
+    TARPED --> [*]: exports Untrack
+```
 
 | State    | What it means                                                                                                                                                                                                                    |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -17,23 +30,25 @@ An allowed player standing within `untarpDistance` of a tarp presses `[E]` to un
 
 ## What you have to wire up
 
-Two things, and only two:
+{% columns %}
+{% column width="50%" %}
+### 1. Tracking
 
-1. [**Tracking**](tracking-a-vehicle.md) - call `exports.vehicle_tarp:Track` from your garage, dealership or spawn code once the vehicle exists.
-2. [**Access**](access-model.md) - write `ServerConfig.canAccess` to decide who sees and uncovers a tarp.
+Call `exports.vehicle_tarp:Track` from your garage, dealership or spawn code once the vehicle exists. See [Tracking a vehicle](tracking-a-vehicle.md).
+{% endcolumn %}
+
+{% column width="50%" %}
+### 2. Access
+
+Write `ServerConfig.canAccess` to decide who sees and uncovers a tarp. See [Access model](access-model.md).
+{% endcolumn %}
+{% endcolumns %}
 
 Everything else works out of the box. When your garage stores a vehicle back, or a player is wiped, call [`Untrack`](untracking-a-vehicle.md) to drop it from the system.
 
 ## Where to go next
 
-| Page                                            | What it covers                                                |
-| ----------------------------------------------- | ------------------------------------------------------------- |
-| [Installation](installation.md)                 | Dependencies, start order, database, admin permissions        |
-| [Tracking a vehicle](tracking-a-vehicle.md)     | The `Track` export, and what `ownerSource` does               |
-| [Untracking a vehicle](untracking-a-vehicle.md) | The `Untrack` export, its filter, and what it leaves behind   |
-| [Access model](access-model.md)                 | `canAccess`, render distance, key-item refresh, admin logging |
-| [Configuration](configuration.md)               | Every key in `config/shared.lua`, plus the convars            |
-| [Commands](commands.md)                         | Admin commands, the staff map, the diagnostic overlay         |
+<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h3><i class="fa-download" style="color:$primary;">:download:</i></h3></td><td><strong>Installation</strong></td><td>Dependencies, start order, database, admin permissions</td><td><a href="installation.md">installation.md</a></td></tr><tr><td><h3><i class="fa-location-crosshairs" style="color:$primary;">:location-crosshairs:</i></h3></td><td><strong>Tracking a vehicle</strong></td><td>The <code>Track</code> export, and what <code>ownerSource</code> does</td><td><a href="tracking-a-vehicle.md">tracking-a-vehicle.md</a></td></tr><tr><td><h3><i class="fa-link-slash" style="color:$primary;">:link-slash:</i></h3></td><td><strong>Untracking a vehicle</strong></td><td>The <code>Untrack</code> export, its filter, and what it leaves behind</td><td><a href="untracking-a-vehicle.md">untracking-a-vehicle.md</a></td></tr><tr><td><h3><i class="fa-key" style="color:$primary;">:key:</i></h3></td><td><strong>Access model</strong></td><td><code>canAccess</code>, render distance, key-item refresh, admin logging</td><td><a href="access-model.md">access-model.md</a></td></tr><tr><td><h3><i class="fa-sliders" style="color:$primary;">:sliders:</i></h3></td><td><strong>Configuration</strong></td><td>Every key in <code>config/shared.lua</code>, plus the convars</td><td><a href="configuration.md">configuration.md</a></td></tr><tr><td><h3><i class="fa-terminal" style="color:$primary;">:terminal:</i></h3></td><td><strong>Commands</strong></td><td>Admin commands, the staff map, the diagnostic overlay</td><td><a href="commands.md">commands.md</a></td></tr></tbody></table>
 
 ## Dependencies
 

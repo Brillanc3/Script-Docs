@@ -1,3 +1,7 @@
+---
+icon: terminal
+---
+
 # Commands
 
 All of these are gated by `Config.adminGroups` on `qbx_core`, or by the ACE principal `command.vtarp` on standalone and plain `qb-core`.

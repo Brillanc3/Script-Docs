@@ -1,5 +1,6 @@
 ---
 description: Who can see a tarp, and who can uncover it
+icon: key
 ---
 
 # Access model

@@ -1,14 +1,23 @@
+---
+description: Dependencies, start order, database and admin permissions
+icon: download
+---
+
 # Installation
 
-## 1. Check the dependencies
+{% stepper %}
+{% step %}
+### Check the dependencies
 
 **`oxmysql` is required.** It is declared in the manifest and the resource will not start without it.
 
 **`ox_lib` is recommended but not required.** With it, a tarped vehicle keeps its colours, extras, doors, windows and tyres, and the `[E]` prompt uses the ox\_lib help text. Without it the resource still runs, on a reduced snapshot and the native prompt.
 
 A framework (`qbx_core` or `qb-core`) and `ox_inventory` are optional too. Detection is automatic at resource start - there is no config flag to pick a mode.
+{% endstep %}
 
-## 2. Start the resource
+{% step %}
+### Start the resource
 
 Drop the `vehicle_tarp` folder in your resources and start it **after** `oxmysql` and your framework:
 
@@ -20,12 +29,16 @@ ensure vehicle_tarp
 ```
 
 If your server uses bracketed group folders, putting it in `[standalone]` is enough - the existing `ensure [standalone]` line already covers it, as long as `[ox]` and `qbx_core` start before it.
+{% endstep %}
 
-## 3. Database
+{% step %}
+### Database
 
 Nothing to import. The tables are created automatically on first start through `oxmysql`, and there is no `.sql` file shipped with the resource.
+{% endstep %}
 
-## 4. Admin permissions
+{% step %}
+### Admin permissions
 
 **On `qbx_core`** there is nothing to do. `Config.adminGroups` (`{ 'admin', 'god' }` by default) is checked through `exports.qbx_core:HasPermission`.
 
@@ -34,8 +47,10 @@ Nothing to import. The tables are created automatically on first start through `
 ```
 add_ace group.admin command.vtarp allow
 ```
+{% endstep %}
 
-## 5. Wire up the two things that are yours
+{% step %}
+### Wire up the two things that are yours
 
 The resource does not spawn vehicles and ships no access rule you can use as-is:
 
@@ -45,6 +60,8 @@ The resource does not spawn vehicles and ships no access rule you can use as-is:
 {% hint style="warning" %}
 Until `canAccess` returns `true` for someone, **no tarp is visible or uncoverable by anyone**. That is the expected state of a fresh install, not a bug.
 {% endhint %}
+{% endstep %}
+{% endstepper %}
 
 ## When to restart what
 

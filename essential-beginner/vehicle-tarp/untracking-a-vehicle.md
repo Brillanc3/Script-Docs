@@ -1,5 +1,6 @@
 ---
 description: The counterpart of Track
+icon: link-slash
 ---
 
 # Untracking a vehicle
