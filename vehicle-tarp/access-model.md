@@ -1,127 +1,88 @@
 ---
-description: Who can see a tarp, and who can uncover it
+description: Who sees a tarp, who uncovers it, who covers
 icon: key
 ---
 
-# Access model
+# Access
 
-One function decides both: `ServerConfig.canAccess`, in `config/server.lua`.
+One function decides everything: `ServerConfig.Access`, in `config/server.lua`. The resource reads no inventory and no key script by itself - **you** plug your rule in here.
+
+```lua
+ServerConfig.Access = function(source, tarp, action, cache)
+    return false -- true = allowed
+end
+```
 
 {% hint style="danger" %}
-`config/server.lua` is server-only. It is listed in `server_scripts` and must **never** appear in `files{}` or `shared_scripts` - a client would be able to fetch it.
+Return exactly `true` to allow. Anything else, **including an error** in the function, is a refusal.
 {% endhint %}
 
-## `canAccess`
+## Arguments
+
+| Argument | Meaning                                                                                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source` | Server id of the player.                                                                                                                                                  |
+| `tarp`   | The vehicle: see the table below.                                                                                                                                         |
+| `action` | `'view'` (see the tarp), `'uncover'` or `'cover'`.                                                                                                                        |
+| `cache`  | Table shared by all `view` checks of one player during one sync. Store what you read there (inventory, identifier) to read it only once. `nil` for `uncover` and `cover`. |
+
+| `tarp` field   | Meaning                                                                                                     |
+| -------------- | ----------------------------------------------------------------------------------------------------------- |
+| `id`           | Row id in the vehicle table (`player_vehicles.id`, or the plate on ESX). Shown in "Uncover vehicle ID #12". |
+| `plate`        | Plate, **trimmed and upper case**. Compare with `TarpUtil.NormalizePlate(yourPlate)`.                       |
+| `model`        | Model hash.                                                                                                 |
+| `owner`        | License of the player who covered. `nil` on `cover`.                                                        |
+| `vehicleOwner` | Owner column of the vehicle table (`citizenid` on QBox / QBCore, `identifier` on ESX).                      |
+
+## Standalone rule: the owner
+
+Works on QBox, QBCore and ESX, without any other script. `TarpBridge.GetIdentifier(source)` returns the value stored in the owner column for this player.
 
 ```lua
-ServerConfig = {
-    renderDistance = 30.0,
-
-    ---@param source number  player server id
-    ---@param vehicle { id:integer, plate:string, model:string|number, owner:string?, vehicleId:integer?, coords:vector4? }
-    ---@return boolean
-    canAccess = function(source, vehicle)
-        return false
-    end,
-}
+ServerConfig.Access = function(source, tarp, action, cache)
+    cache = cache or {}
+    if cache.identifier == nil then
+        cache.identifier = TarpBridge.GetIdentifier(source) or false
+    end
+    return cache.identifier ~= false and cache.identifier == tarp.vehicleOwner
+end
 ```
 
-Return `true` if `source` may **see** the tarp prop and **uncover** it with `[E]`. It runs server-side and is authoritative: an untarp request is re-validated through it, even though the client only shows the prompt after its own poll already passed.
-
-### The `vehicle` argument
-
-| Field       | Meaning                                                                                    |
-| ----------- | ------------------------------------------------------------------------------------------ |
-| `id`        | vehicle\_tarp's own row id                                                                 |
-| `plate`     | The raw plate from `GetVehicleNumberPlateText` - **space-padded to 8 characters**          |
-| `model`     | The vehicle model                                                                          |
-| `owner`     | The identity recorded when the vehicle was tracked (`citizenid`, or `license:` standalone) |
-| `vehicleId` | The `player_vehicles` id, or `nil` if the vehicle is not owned there                       |
-| `coords`    | The last saved position                                                                    |
+Want lent keys, key items or jobs? Put that check in the same function. Ready-made versions: [ox\_inventory key item](examples/ox-inventory.md), [mVehicle](examples/mvehicle.md).
 
 {% hint style="warning" %}
-**A tarped vehicle has no entity.** It was deleted server-side, which is the whole point of tarping. Any check that needs the live vehicle - session keys, lockpick key state, anything reading the entity or one of its statebags - can never answer here, and would make every tarp permanently invisible.
-
-Answer from `vehicle`'s fields only: an ownership record, or your key script's own lookup by `plate` or `vehicleId`.
+**A covered vehicle has no entity.** It was deleted - that is the point of the tarp. Anything bound to the entity (session keys such as `qbx_vehiclekeys`, state bags, lockpick state) cannot answer here. Use data that exists without the vehicle: the owner, or an item bound to the plate.
 {% endhint %}
 
-### Example: owner of the `player_vehicles` record
+## When is access checked?
 
-```lua
-canAccess = function(source, vehicle)
-    local player = exports.qbx_core:GetPlayer(source)
-    if not player then return false end
+| Moment                                | Action    | Notes                                                                          |
+| ------------------------------------- | --------- | ------------------------------------------------------------------------------ |
+| Every 2 s, for tarps near each player | `view`    | Players without access receive nothing. Checks are spread over several frames. |
+| Player presses `E` / `/untarp`        | `uncover` | Re-checked on the server.                                                      |
+| Player runs `/tarp`                   | `cover`   | Only if `ServerConfig.CoverRequiresAccess = true`.                             |
 
-    if vehicle.vehicleId and GetResourceState('qbx_vehicles') == 'started' then
-        local pv = exports.qbx_vehicles:GetPlayerVehicle(vehicle.vehicleId)
-        if pv and pv.citizenid == player.PlayerData.citizenid then return true end
-    end
+### Refreshing visibility
 
-    return false
-end
+* `ServerConfig.AccessRecheck = true` (default): tarps already shown are checked again every 2 s. A lost key hides them within 2 s. Nothing else to do.
+* `ServerConfig.AccessRecheck = false`: tarps already shown stay until you call `exports.vehicle_tarp:RefreshAccess(playerId)`. Cheaper on big servers - call it from your key or inventory script when access changes. New tarps in range are always checked.
+
+## Uncover delay
+
+`ServerConfig.UncoverLockMinutes = 15`: a tarp placed by a player cannot be uncovered by a player for 15 minutes (message "Recent tarp: can be uncovered in X min"). This stops a thief from covering a vehicle to steal it right after.
+
+* Tarps placed by staff, by the auto re-cover or by the `Cover` export have no delay.
+* Staff can always uncover.
+* `0` disables the delay.
+
+## Staff
+
+Staff (ace `vehicle_tarp.admin`) are **not** added to `Access` automatically. They use their own tools: `tarp_view` to see every tarp, `tarp_uncover` / `tarp_cover`, and the staff panel. See [Commands](commands.md).
+
+## Testing a rule
+
+```
+tarp_debug access <playerId> <id>
 ```
 
-### Example: a key item carrying the plate
-
-An inventory item whose metadata holds the plate resolves fine with no entity spawned, so it is a good fit here.
-
-Mind the trim: the tarp row keeps the raw, space-padded plate, while most key scripts store it trimmed.
-
-```lua
-canAccess = function(source, vehicle)
-    local plate = type(vehicle.plate) == 'string' and vehicle.plate:match('^%s*(.-)%s*$')
-    if not plate or plate == '' then return false end
-
-    local count = exports.ox_inventory:Search(source, 'count', 'car_key', { plate = plate })
-    return type(count) == 'number' and count > 0
-end
-```
-
-The two can of course be combined - return `true` on either.
-
-## `renderDistance`
-
-Metres at which an allowed player starts seeing a tarp prop. Default `30.0`.
-
-It is **not** the same thing as `Config.untarpDistance` (`3.0` by default), the much shorter range at which the `[E]` prompt appears. Seeing a tarp from across the street and standing close enough to uncover it are two separate distances.
-
-## Reacting to a key changing hands
-
-`Config.accessRefreshItems`, in `config/shared.lua`, lists the inventory items your `canAccess` reads:
-
-```lua
-accessRefreshItems = { car_key = true },
-```
-
-An item count changing fires no tarp event, so without this list a player who has just been handed a key would only see the tarp on the next reconcile poll - up to `renderReconcileSeconds` late. Listed here, their client re-syncs the instant the count moves.
-
-Requires `ox_inventory`. Leave it empty to rely on the poll alone.
-
-## Logging admin actions
-
-`ServerConfig.onAdminAction` is called after every action launched from the `/vtarp_ui` map: `teleportTo`, `bringHere`, `forceTarp`, `forceUntarp` and `deleteTracking`. The GPS waypoint is client-only and never reaches it.
-
-```lua
----@param entry { action:string, source:number, name:string, identifier:string?,
----              vehicleId:integer, plate:string, owner:string?, state:string,
----              coords:{x:number,y:number,z:number}?, ok:boolean }
-onAdminAction = function(entry) ... end
-```
-
-* It ships as a one-line `print`, so actions are traceable in the txAdmin log from the moment you install the resource.
-* Set it to `false` to log nothing at all.
-* It is called **after** the action and carries an `ok` flag: a refused action is a trace worth keeping too.
-* It is wrapped in a `pcall`, so it cannot break the action or the player's notification. Do not rely on throwing here to cancel anything - the action has already happened, and you would simply lose the trace.
-
-## Gating the diagnostic views
-
-Two more resolvers sit in the same file, both defaulting to your admin check:
-
-| Resolver                  | Gates                                                      |
-| ------------------------- | ---------------------------------------------------------- |
-| `canUseDebugView(source)` | `/vtarp_ui` (the staff map) and `/vtarp_ui_debug`          |
-| `canUseDebug(source)`     | `/vtarp_debug` and `/vtarp_probe`, the measurement tooling |
-
-They are deliberately separate. `canUseDebug` guards commands that repeatedly damage and repair the vehicle they inspect and write to `debug.log` - return `false` from it on a production server. `canUseDebugView` guards views that change nothing, but that show every plate, owner and coordinate on the server.
-
-`canUseDebugView` is re-evaluated on **every** refresh, not only when the command is run: a watcher who loses the permission stops receiving the feed and has their view closed, without waiting for a reconnect.
+Prints the `view` result of `Access` for this player and this tarp.

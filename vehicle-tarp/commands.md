@@ -1,73 +1,67 @@
 ---
+description: Player commands, keys, staff and debug commands
 icon: terminal
 ---
 
 # Commands
 
-All of these are gated by `Config.adminGroups` on `qbx_core`, or by the ACE principal `command.vtarp` on standalone and plain `qb-core`.
+## Players
 
-| Command           | Effect                                                                                                                                                |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/tarp`           | Tarps the vehicle you are in, or the nearest tracked one if you are on foot. Does nothing when `enableTarp` is `false`.                               |
-| `/untarp`         | Uncovers the nearest tracked vehicle within 50 m, bypassing `canAccess` and the distance check.                                                       |
-| `/deltarp`        | Stops tracking the vehicle you are in, or the nearest within 50 m: removes the live entity and deletes its database row. Irreversible.                |
-| `/listtarp`       | Lists every currently tarped vehicle - id, plate, owner, and how long ago it was tarped.                                                              |
-| `/tptarp <id>`    | Teleports you to the saved position of that row id.                                                                                                   |
-| `/showtarps`      | Toggles **admin reveal**: you see every tarp within `renderDistance` regardless of `canAccess`, and `[E]` uncovers them. Run it again to turn it off. |
-| `/vtarp_track`    | Tracks the vehicle you are currently sitting in.                                                                                                      |
-| `/vtarp_ui`       | Opens the staff map. `ESC` closes it.                                                                                                                 |
-| `/vtarp_ui_debug` | Toggles the diagnostic overlay.                                                                                                                       |
+Command names depend on the language (`Config.Locale`).
 
-{% hint style="info" %}
-The admin reveal from `/showtarps` persists until you toggle it back off, and the permission behind it is re-checked on every refresh - a demotion closes the reveal without waiting for a reconnect.
-{% endhint %}
+| `en`      | `fr`        | Effect                      |
+| --------- | ----------- | --------------------------- |
+| `/tarp`   | `/bacher`   | Covers the nearest vehicle. |
+| `/untarp` | `/debacher` | Uncovers the nearest tarp.  |
 
-## The staff map - `/vtarp_ui`
+### Near a tarp
 
-A full-screen map of Los Santos showing the tracked fleet, with a searchable sidebar. The command toggles it, `ESC` closes it. It opens on its own - `/vtarp_ui_debug` is not a prerequisite.
+Within `Config.InteractDistance` (3 m), on foot:
 
-Gated by `ServerConfig.canUseDebugView` when you define it, by the admin check otherwise. **Losing the permission closes the map**, because it shows every plate, owner and coordinate on the server - not just the ones you could uncover.
+| Key | Effect                              |
+| --- | ----------------------------------- |
+| `E` | Uncover ("Uncover vehicle ID #12"). |
+| `F` | Show / hide the vehicle stats card. |
 
-* Search matches **plate and owner**, trimmed and case-insensitive.
-* The three state chips are cumulative, and **no chip selected shows everything**.
-* Markers are green for `ACTIVE`, blue for `TARPED`, and amber and square for an anomaly - the same colours as the diagnostic overlay, so the same vehicle reads the same on both.
-* Positions are the **last known** ones, not live ones. A moving vehicle is drawn where it was last seen, and an expanded row shows how old its reading is.
+Keys and text are set by `Config.Prompt`, `Config.InteractKey` and `Config.StatsKey`. Default keys for the two commands: `Config.Keys` (rebindable in **Settings > Key Bindings > FiveM**).
 
-Selecting a row expands it onto six actions:
+### Conditions
 
-| Action                | Effect                                                                                                                                                            |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Y aller`             | Teleports you to the vehicle's saved coordinates.                                                                                                                 |
-| `Le faire venir`      | Brings the vehicle 3 m in front of you, at your own Z. A tarped vehicle stays tarped, its tarp simply moves. Refused if someone is inside. Asks for confirmation. |
-| `Bacher` / `Debacher` | Tarps or uncovers the row, bypassing `canAccess` and the distance check. Only the one that applies to the row's state is shown.                                   |
-| `Supprimer le suivi`  | Deletes the live entity **and** the database row. Irreversible, asks for confirmation.                                                                            |
-| `Waypoint`            | Sets a GPS waypoint. Client-only - nothing is sent to the server and nothing is logged.                                                                           |
+{% tabs %}
+{% tab title="Cover" %}
+* The player is on foot, within 3 m of the vehicle.
+* The vehicle is **empty** and **stopped**.
+* The vehicle is in the **vehicle table** (same plate, same model).
+* `Access` returns `true` for `cover` (if `CoverRequiresAccess`).
+{% endtab %}
 
-The five server-side actions are logged through `ServerConfig.onAdminAction`.
+{% tab title="Uncover" %}
+* The player is within 3 m of the tarp, in the same routing bucket.
+* `Access` returns `true` for `uncover`.
+* The uncover delay has expired (players only).
+* If a vehicle with the same plate is already in the world, no duplicate is created: the tarp is simply removed.
+{% endtab %}
+{% endtabs %}
 
-## The diagnostic overlay - `/vtarp_ui_debug`
+## Staff
 
-Toggles, for the calling player only:
+Requires the ace `vehicle_tarp.admin`. Names are set in `ServerConfig.Staff.commands`.
 
-* a **blip** for every tracked vehicle, on the minimap and the full map;
-* an **oriented 3D box** and a **floating label** around every tracked vehicle within `debugDrawDistance`;
-* a **passive HUD** listing the fleet, with a countdown to tarping for active vehicles and an elapsed time for tarped ones. It never takes mouse focus, so the game stays playable.
+| Command             | Effect                                                                                      | Console |
+| ------------------- | ------------------------------------------------------------------------------------------- | ------- |
+| `tarp_view`         | Shows / hides **every** tarp for you. Off on each connection.                               | No      |
+| `tarp_uncover <id>` | Uncovers remotely: no key, no delay.                                                        | Yes     |
+| `tarp_cover <id>`   | Covers the vehicle with this id if it is out, wherever it is. It must be empty and stopped. | Yes     |
+| `tarp_panel`        | Opens the [staff panel](staff-panel.md).                                                    | No      |
 
-{% hint style="warning" %}
-This view **ignores `canAccess` and spawns nothing**. A tarp you have no access to shows a box and a label, but no prop. `/showtarps` is the command that actually renders the props to you.
-{% endhint %}
+## Diagnostics
 
-It refuses the server console - there is no client to draw for.
+Requires the ace `command.tarp_debug` (name: `ServerConfig.DebugCommand`).
 
-Two situations are flagged in yellow, and sorted to the top of the HUD list:
-
-| Flag        | Meaning                                                                                     |
-| ----------- | ------------------------------------------------------------------------------------------- |
-| `DUPLICATE` | A tarped row that still has a live entity - a prop would be drawn on top of a real vehicle. |
-| `GHOST`     | An active row whose vehicle no longer exists in the world.                                  |
-
-## Measurement tooling
-
-`/vtarp_debug [plate]` and `/vtarp_probe [plate]` are development tooling, gated by their own resolver `ServerConfig.canUseDebug` rather than by the admin check. They repeatedly damage and repair the vehicle they inspect and append to `vehicle_tarp/debug.log`.
-
-Return `false` from `canUseDebug` to close them on a production server.
+| Command                             | Effect                                                         |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `tarp_debug whoami [playerId]`      | Framework, license and identifier of a player.                 |
+| `tarp_debug list`                   | Every tarp with its position, owner, date and lock.            |
+| `tarp_debug forget <id>`            | Deletes a tarp record without recreating the vehicle.          |
+| `tarp_debug idle <plate>`           | Marks a tracked vehicle as idle: re-covered at the next check. |
+| `tarp_debug access <playerId> <id>` | Result of `Access` (`view`) for this player and tarp.          |
